@@ -23,7 +23,16 @@ pub fn RunApp() !void {
 
         rl.clearBackground(rl.Color.white);
 
-        rl.drawText("Congrats! You created your first window!", 190, 200, 20, rl.Color.light_gray);
+        rl.drawText("SysZigWatch - system monitoring...", 220, 10, 20, rl.Color.light_gray);
+
+        // CPU part
+        rl.drawText("CPU", 60, 50, 20, rl.Color.light_gray);
+        rl.drawRectangle(60, 80, 680, 100, rl.Color.light_gray);
+
+        // DISK part
+        rl.drawText("Disk", 60, 250, 20, rl.Color.light_gray);
+        rl.drawRectangle(60, 280, 680, 100, rl.Color.light_gray);
+
         //----------------------------------------------------------------------------------
     }
 }
