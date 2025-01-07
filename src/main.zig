@@ -1,5 +1,6 @@
 const print = @import("std").debug.print;
+const app = @import("app.zig");
 
 pub fn main() !void {
-    print("Hello World", .{});
+    try app.RunApp();
 }
