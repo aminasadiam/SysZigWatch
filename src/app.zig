@@ -7,13 +7,18 @@ pub fn RunApp() !void {
 
     rl.initWindow(screenWidth, screenHeight, "SysZigWatch - System Monitoring");
     defer rl.closeWindow();
-
     rl.setTargetFPS(60);
+
+    // Set variables
+    const cpu_usage = "0%";
+    const disk_usage = "0%";
 
     while (!rl.windowShouldClose()) { // Detect window close button or ESC key
         // Update
         //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
+
+        // update cpu and disk usage from system.zig
+        // TODO: update usages
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -29,9 +34,15 @@ pub fn RunApp() !void {
         rl.drawText("CPU", 60, 50, 20, rl.Color.light_gray);
         rl.drawRectangle(60, 80, 680, 100, rl.Color.light_gray);
 
+        rl.drawLine(600, 80, 600, 180, rl.Color.black);
+        rl.drawText(cpu_usage, 650, 120, 20, rl.Color.black);
+
         // DISK part
         rl.drawText("Disk", 60, 250, 20, rl.Color.light_gray);
         rl.drawRectangle(60, 280, 680, 100, rl.Color.light_gray);
+
+        rl.drawLine(600, 280, 600, 380, rl.Color.black);
+        rl.drawText(disk_usage, 650, 320, 20, rl.Color.black);
 
         //----------------------------------------------------------------------------------
     }
