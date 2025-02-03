@@ -1,4 +1,5 @@
 const std = @import("std");
+const fs = std.fs;
 const os = std.os;
 
 pub fn get_cpu_usage() !f32 {
@@ -23,4 +24,25 @@ pub fn get_cpu_usage() !f32 {
     } else if (os.windows) {}
 }
 
-pub fn get_disk_usage() !f32 {}
+pub fn get_disk_usage() !f32 {
+    if (os.linux) {
+        const statvfs = fs.statvfs;
+        const mount_path = "/"; // Root mount path
+
+        var stat: statvfs = undefined;
+        try fs.statvfs(mount_path, &stat);
+
+        const total_blocks = stat.f_blocks;
+        const free_blocks = stat.f_bfree;
+
+        const total_bytes = total_blocks * stat.f_frsize;
+        const free_bytes = free_blocks * stat.f_frsize;
+
+        const used_bytes = total_bytes - free_bytes;
+        const usage_percentage = (used_bytes * 100) / total_bytes;
+
+        return usage_percentage;
+    } else if (os.windows) {
+        // Windows-specific implementation
+    }
+}
