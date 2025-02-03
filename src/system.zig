@@ -21,7 +21,24 @@ pub fn get_cpu_usage() !f32 {
         const usage_percentage = ((total_jiffies - idle_jiffies) * 100) / total_jiffies;
 
         return usage_percentage;
-    } else if (os.windows) {}
+    } else if (os.windows) {
+        const windows = std.os.windows;
+
+        var idle_time: windows.Kernel32.FILETIME = undefined;
+        var kernel_time: windows.Kernel32.FILETIME = undefined;
+        var user_time: windows.Kernel32.FILETIME = undefined;
+        if (!windows.Kernel32.GetSystemTimes(&idle_time, &kernel_time, &user_time)) return error.CpuUsageFailed;
+
+        const idle = @intCast(u64, idle_time.dwLowDateTime) | (@intCast(u64, idle_time.dwHighDateTime) << 32);
+        const kernel = @intCast(u64, kernel_time.dwLowDateTime) | (@intCast(u64, kernel_time.dwHighDateTime) << 32);
+        const user = @intCast(u64, user_time.dwLowDateTime) | (@intCast(u64, user_time.dwHighDateTime) << 32);
+
+        const total_time = kernel + user;
+
+        const usage_percentage = (total_time - idle) * 100 / total_time;
+
+        return usage_percentage;
+    }
 }
 
 pub fn get_disk_usage() !f32 {
@@ -43,6 +60,17 @@ pub fn get_disk_usage() !f32 {
 
         return usage_percentage;
     } else if (os.windows) {
-        // Windows-specific implementation
+        var free_bytes_available: u64 = 0;
+        var total_number_of_bytes: u64 = 0;
+        var total_number_of_free_bytes: u64 = 0;
+
+        if (!@boolCast(windows.Kernel32.GetDiskFreeSpaceExW(null, &free_bytes_available, &total_number_of_bytes, &total_number_of_free_bytes))) {
+            return error.DiskUsageFailed;
+        }
+
+        const used_bytes = total_number_of_bytes - total_number_of_free_bytes;
+        const usage_percentage = (used_bytes * 100) / total_number_of_bytes;
+
+        return usage_percentage;
     }
 }
